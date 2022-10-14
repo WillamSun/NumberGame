@@ -57,6 +57,7 @@
             this.button1.Text = "换一个";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.button1_HelpRequested);
             // 
             // label1
             // 
@@ -227,6 +228,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.HelpButton = true;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "数字抵消";
