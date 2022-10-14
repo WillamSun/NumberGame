@@ -101,10 +101,6 @@ namespace NumberGame
             }
         }
 
-        private void button1_HelpRequested(object sender, HelpEventArgs hlpevent)
-        {
-        }
-
         private void Form1_HelpRequested(object sender, HelpEventArgs hlpevent)
         {
             hlpevent.Handled = true;
