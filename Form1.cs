@@ -103,12 +103,16 @@ namespace NumberGame
 
         private void button1_HelpRequested(object sender, HelpEventArgs hlpevent)
         {
+        }
+
+        private void Form1_HelpRequested(object sender, HelpEventArgs hlpevent)
+        {
             hlpevent.Handled = true;
             MessageBox.Show("玩法：\n" +
                 "打开软件后可以看到左上方的横式，右上方的分数，下方有两个按钮\n" +
                 "选择一些加起来等于0的数字（单独一个0也可以，或者-3，-2，+5这三个数也可以，不限次数）\n" +
                 "选择好后，下方的“重开一局”按钮会变成“抵消”\n" +
-                "如果所有选择的数相加等于0，按下“抵消”按钮即可得1分\n");
+                "如果所有选择的数相加等于0，按下“抵消”按钮即可得1分\n", "帮助", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
