@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NumberGame
 {
@@ -13,16 +14,20 @@ namespace NumberGame
         int Help;
         int Score;
         int SelectItems;
+        int MaxSecond = 10;
+        int Second = 0;
         List<LinkLabel> SelectItemsList;
 
         public Form1()
         {
             InitializeComponent();
+            button3.BringToFront();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            button3.BringToFront();
+            button3.Visible = false;
+            Second = MaxSecond;
             SelectItemsList = new List<LinkLabel>();
             label11.Visible = false;
             label10.Visible = false;
@@ -31,12 +36,25 @@ namespace NumberGame
             SelectItemsString = "";
             SelectItems = -114514;
             timer1.Start();
+            timer2.Start();
             InitializeLabels();
         }
 
         private void label2_Click(object sender, EventArgs e)
         {
             if (!(sender is LinkLabel)) return;
+            if (button3.Visible)
+            {
+                LinkLabel[] labels = Labels;
+                foreach (LinkLabel lab in labels) lab.BorderStyle = BorderStyle.None;
+                List<List<LinkLabel>> l = GetOKOffsetLabels();
+                List<LinkLabel> ls = l[new Random().Next(l.Count - 1)];
+                foreach (LinkLabel labe in ls)
+                {
+                    labe.BorderStyle = BorderStyle.FixedSingle;
+                }
+            }
+            checkBox4.CheckState = CheckState.Indeterminate; 
             LinkLabel label = sender as LinkLabel;
             SelectItemsString = "";
             if (label.BorderStyle != BorderStyle.FixedSingle)
@@ -101,9 +119,7 @@ namespace NumberGame
                             }
                         }
                     }
-                    MessageBox.Show("还有可以抵消的数，可行的选择方案: \n" + text + "\n游戏结束", "你输了", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    button3.Visible = true;
-                    button3.Focus();
+                    lose("还有可以抵消的数，可行的选择方案: \n" + text);
                     return;
                 }
                 InitializeLabels();
@@ -111,9 +127,7 @@ namespace NumberGame
             }
             if (SelectItems != 0)
             {
-                MessageBox.Show(SelectItemsString + " = " + SelectItems + " ≠ 0" + "\n游戏结束", "你输了", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                button3.Visible = true;
-                button3.Focus();
+                lose(SelectItemsString + " = " + SelectItems + " ≠ 0");
                 return;
             }
             foreach (LinkLabel label in SelectItemsList)
@@ -122,6 +136,7 @@ namespace NumberGame
                 label.BorderStyle = BorderStyle.None;
                 Thread.Sleep(10);
             }
+            Second = MaxSecond;
             Score++;
             SelectItemsList.Clear();
             SelectItems = -114514;
@@ -130,6 +145,8 @@ namespace NumberGame
         private void timer1_Tick(object sender, EventArgs e)
         {
             double tmp;
+            progressBar2.Value = (100/MaxSecond) * Second;
+            progressBar2.Visible = checkBox2.Checked && !button3.Visible;
             if (checkBox1.Checked)
             {
                 label10.Visible = true;
@@ -216,6 +233,16 @@ namespace NumberGame
                 }
             }
             return result;
+        }
+
+        private void lose(string reason)
+        {
+            button1.Visible = false;
+            progressBar2.Visible = false;
+            button4.Visible = false;
+            button3.Visible = true;
+            button3.Focus();
+            MessageBox.Show(reason + "\n游戏结束", "你输了", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         int openHelpMenu = 0;
@@ -386,6 +413,60 @@ namespace NumberGame
         {
             if (MessageBox.Show("是否开启新局，本局将会立刻结束","提示",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation,MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 button3_Click(sender, e);
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            if (Second > 0 && checkBox2.Checked && !button3.Visible) Second--;
+            if (Second == 0)
+            {
+                timer2.Stop();
+                lose("时间到了");
+            }
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            LinkLabel[] labels = Labels;
+            if (checkBox4.Checked)
+            {
+                foreach (LinkLabel label in labels)
+                {
+                    if (label.BorderStyle != BorderStyle.FixedSingle)
+                    {
+                        if (SelectItems == -114514)
+                        {
+                            SelectItems = 0;
+                        }
+                        if (checkBox1.Checked)
+                        {
+                            progressBar1.Visible = true;
+                            label11.Visible = true;
+                            label10.Visible = true;
+                        }
+                        SelectItems += int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
+                        SelectItemsList.Add(label);
+                        label.BorderStyle = BorderStyle.FixedSingle;
+                        foreach (LinkLabel l in SelectItemsList)
+                        {
+                            if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
+                            else SelectItemsString += l.Text + " + ";
+                        }
+                    }
+                }
+                return;
+            }
+            foreach (LinkLabel label in labels)
+            {
+                SelectItems -= int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
+                SelectItemsList.Remove(label);
+                label.BorderStyle = BorderStyle.None;
+                foreach (LinkLabel l in SelectItemsList)
+                {
+                    if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
+                    else SelectItemsString += l.Text + " + ";
+                }
+            }
         }
     }
 }
