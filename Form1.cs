@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NumberGame
 {
@@ -21,12 +20,10 @@ namespace NumberGame
         public Form1()
         {
             InitializeComponent();
-            button3.BringToFront();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            button3.Visible = false;
             Second = MaxSecond;
             SelectItemsList = new List<LinkLabel>();
             label11.Visible = false;
@@ -87,6 +84,7 @@ namespace NumberGame
                 if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
                 else SelectItemsString += l.Text + " + ";
             }
+            if (SelectItemsList.Count == 0) checkBox4.Checked = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -427,7 +425,9 @@ namespace NumberGame
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
+            if (checkBox4.CheckState == CheckState.Indeterminate) return;
             LinkLabel[] labels = Labels;
+            SelectItemsString = "";
             if (checkBox4.Checked)
             {
                 foreach (LinkLabel label in labels)
@@ -458,13 +458,16 @@ namespace NumberGame
             }
             foreach (LinkLabel label in labels)
             {
-                SelectItems -= int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
-                SelectItemsList.Remove(label);
-                label.BorderStyle = BorderStyle.None;
-                foreach (LinkLabel l in SelectItemsList)
+                if (label.BorderStyle != BorderStyle.None)
                 {
-                    if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
-                    else SelectItemsString += l.Text + " + ";
+                    SelectItems -= int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
+                    SelectItemsList.Remove(label);
+                    label.BorderStyle = BorderStyle.None;
+                    foreach (LinkLabel l in SelectItemsList)
+                    {
+                        if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
+                        else SelectItemsString += l.Text + " + ";
+                    }
                 }
             }
         }
