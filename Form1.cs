@@ -18,11 +18,11 @@ namespace NumberGame
         public Form1()
         {
             InitializeComponent();
-            button3.BringToFront();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            button3.BringToFront();
             SelectItemsList = new List<LinkLabel>();
             label11.Visible = false;
             label10.Visible = false;
@@ -45,9 +45,12 @@ namespace NumberGame
                 {
                     SelectItems = 0;
                 }
-                progressBar1.Visible = true;
-                label11.Visible = true;
-                label10.Visible = true;
+                if (checkBox1.Checked)
+                {
+                    progressBar1.Visible = true;
+                    label11.Visible = true;
+                    label10.Visible = true;
+                }
                 SelectItems += int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
                 SelectItemsList.Add(label);
                 label.BorderStyle = BorderStyle.FixedSingle;
@@ -127,16 +130,28 @@ namespace NumberGame
         private void timer1_Tick(object sender, EventArgs e)
         {
             double tmp;
-            label10.Text = "得数: " + SelectItems;
-            if (SelectItems == 0) label10.ForeColor = Color.Green;
-            else label10.ForeColor = Color.Black;
-            if (SelectItems != -114514)
+            if (checkBox1.Checked)
             {
-                tmp = (Math.Abs(GetBiggestChoise()) > Math.Abs(GetBiggestChoise(false))) ? Math.Abs(GetBiggestChoise()) : Math.Abs(GetBiggestChoise(false));
-                tmp = 100 / Math.Abs(tmp) * Math.Abs(0 - SelectItems);
-                progressBar1.Value = (int)tmp;
+                label10.Visible = true;
+                label10.Text = "得数: " + SelectItems;
+                if (SelectItems == 0) label11.ForeColor = label10.ForeColor = Color.Green;
+                else label11.ForeColor = label10.ForeColor = Color.Black;
+                if (SelectItems != -114514)
+                {
+                    progressBar1.Visible = true;
+                    label11.Visible = true;
+                    tmp = (Math.Abs(GetBiggestChoise()) > Math.Abs(GetBiggestChoise(false))) ? Math.Abs(GetBiggestChoise()) : Math.Abs(GetBiggestChoise(false));
+                    tmp = 100 / Math.Abs(tmp) * Math.Abs(0 - SelectItems);
+                    progressBar1.Value = (int)tmp;
+                }
             }
-            if (SelectItemsList.Count == 0) { SelectItems = -114514; progressBar1.Visible = false; label11.Visible = false; label10.Visible = false; }
+            else
+            {
+                progressBar1.Visible = false;
+                label10.Visible = false;
+                label11.Visible = false;
+            }
+            if (SelectItemsList.Count == 0) { SelectItems = -114514; progressBar1.Visible = false; label11.Visible = false; label10.Text = "未选择数字"; }
             if (SelectItems == -114514) button1.Text = "检测是否死局";
             else button1.Text = "抵消";
             label9.Text = Score.ToString();
@@ -356,25 +371,21 @@ namespace NumberGame
         {
             int BiggestInt = 0;
             LinkLabel[] labels = Labels;
-            for (int i = 1; i < labels.Length; i++) //选择数
+            foreach (Label label in labels)
             {
-                List<List<int>> list = new List<List<int>>();
-                list.AddRange(PermutationCombinations(Enumerable.Range(0, labels.Length).ToList(), i));
-                foreach (List<int> ls in list)
+                int i = int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
+                if (Biggest ? (i > 0) : (i < 0))
                 {
-                    List<LinkLabel> tmp = new List<LinkLabel>();
-                    int integer = 0;
-                    foreach (int inte in ls)
-                    {
-                        integer += int.Parse(labels[inte].Text.Replace("(", string.Empty).Replace(")", string.Empty));
-                    }
-                    if (Biggest ? (integer > BiggestInt) : (integer < BiggestInt))
-                    {
-                        BiggestInt = integer;
-                    }
+                    BiggestInt += i;
                 }
             }
             return BiggestInt;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("是否开启新局，本局将会立刻结束","提示",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation,MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                button3_Click(sender, e);
         }
     }
 }
