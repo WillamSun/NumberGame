@@ -48,6 +48,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -90,6 +91,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.progressBar1);
@@ -275,11 +277,21 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(7, 72);
+            this.label10.Location = new System.Drawing.Point(125, 70);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(53, 15);
             this.label10.TabIndex = 17;
             this.label10.Text = "得数: ";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(10, 68);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(89, 19);
+            this.checkBox1.TabIndex = 18;
+            this.checkBox1.Text = "显示得数";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -329,6 +341,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

@@ -127,14 +127,23 @@ namespace NumberGame
         private void timer1_Tick(object sender, EventArgs e)
         {
             double tmp;
-            label10.Text = "得数: " + SelectItems;
-            if (SelectItems == 0) label10.ForeColor = Color.Green;
-            else label10.ForeColor = Color.Black;
-            if (SelectItems != -114514)
+            if (checkBox1.Checked)
             {
-                tmp = (Math.Abs(GetBiggestChoise()) > Math.Abs(GetBiggestChoise(false))) ? Math.Abs(GetBiggestChoise()) : Math.Abs(GetBiggestChoise(false));
-                tmp = 100 / Math.Abs(tmp) * Math.Abs(0 - SelectItems);
-                progressBar1.Value = (int)tmp;
+                label10.Text = "得数: " + SelectItems;
+                if (SelectItems == 0) label10.ForeColor = Color.Green;
+                else label10.ForeColor = Color.Black;
+                if (SelectItems != -114514)
+                {
+                    tmp = (Math.Abs(GetBiggestChoise()) > Math.Abs(GetBiggestChoise(false))) ? Math.Abs(GetBiggestChoise()) : Math.Abs(GetBiggestChoise(false));
+                    tmp = 100 / Math.Abs(tmp) * Math.Abs(0 - SelectItems);
+                    progressBar1.Value = (int)tmp;
+                }
+            }
+            else
+            {
+                progressBar1.Visible = false;
+                label10.Visible = false;
+                label11.Visible = false;
             }
             if (SelectItemsList.Count == 0) { SelectItems = -114514; progressBar1.Visible = false; label11.Visible = false; label10.Visible = false; }
             if (SelectItems == -114514) button1.Text = "检测是否死局";
