@@ -176,8 +176,8 @@ namespace NumberGame
                         {
                             tmp.Add(labels[inte]);
                         }
+                        result.Add(tmp);
                     }
-                    if (tmp.Count != 0) result.Add(tmp);
                 }
             }
             return result;
