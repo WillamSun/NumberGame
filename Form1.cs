@@ -24,6 +24,7 @@ namespace NumberGame
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            checkBox4.Enabled = true; 
             Second = MaxSecond;
             SelectItemsList = new List<LinkLabel>();
             label11.Visible = false;
@@ -40,6 +41,7 @@ namespace NumberGame
         private void label2_Click(object sender, EventArgs e)
         {
             if (!(sender is LinkLabel)) return;
+            checkBox4.CheckState = CheckState.Indeterminate;
             if (button3.Visible)
             {
                 LinkLabel[] labels = Labels;
@@ -50,8 +52,8 @@ namespace NumberGame
                 {
                     labe.BorderStyle = BorderStyle.FixedSingle;
                 }
+                return;
             }
-            checkBox4.CheckState = CheckState.Indeterminate; 
             LinkLabel label = sender as LinkLabel;
             SelectItemsString = "";
             if (label.BorderStyle != BorderStyle.FixedSingle)
@@ -235,11 +237,15 @@ namespace NumberGame
 
         private void lose(string reason)
         {
-            button1.Visible = false;
-            progressBar2.Visible = false;
-            button4.Visible = false;
+            button1.Visible = 
+                progressBar2.Visible = 
+                button4.Visible = 
+                checkBox4.Checked = 
+                checkBox4.Enabled = false;
             button3.Visible = true;
             button3.Focus();
+            LinkLabel[] labels = Labels;
+            foreach (LinkLabel lab in labels) lab.BorderStyle = BorderStyle.None;
             MessageBox.Show(reason + "\n游戏结束", "你输了", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -247,6 +253,7 @@ namespace NumberGame
         private void Form1_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
+            bool boole = button3.Visible || (Help >= 3);
             openHelpMenu++;
             string HelpText = "玩法：\n" +
                     "打开软件后可以看到左上方的横式，右上方的分数，下方有两个按钮\n" +
@@ -254,52 +261,52 @@ namespace NumberGame
                     "选择好后，下方的“检测是否死局”按钮会变成“抵消”\n" +
                     "如果所有选择的数相加等于0，按下“抵消”按钮即可得1分，如果选错了会结束游戏\n" +
                     "如果觉得陷入了死局，可以按下“检测是否死局”，如确实死局，可以重新生成一次，如没有，将会结束游戏" +
-                    ((Help >= 3) ? ("\n\n已使用" + Help + "次提示，不可再次使用") : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
+                    (boole ? (button3.Visible ? "\n\n游戏已经结束，不可再次使用" : ("\n\n已使用" + Help + "次提示，不可再次使用")) : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
             DialogResult dialogResult;
             switch (openHelpMenu)
             {
                 case 5:
-                    dialogResult = MessageBox.Show("这个菜单好看吗\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("这个菜单好看吗\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 case 6:
-                    dialogResult = MessageBox.Show("别看了，有啥看头?\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("别看了，有啥看头?\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 case 7:
-                    dialogResult = MessageBox.Show("算了你看吧\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("算了你看吧\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 case 8:
-                    dialogResult = MessageBox.Show("...\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("...\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 case 9:
-                    dialogResult = MessageBox.Show("真就继续看呗!\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("真就继续看呗!\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 case 10:
-                    dialogResult = MessageBox.Show("既然你这么喜欢这个菜单,就去GitHub给这个项目点个Star呗~\n点击“帮助”前往GitHub项目地址\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2,0,"https://github.com/WillamSun/NumberGame");
+                    dialogResult = MessageBox.Show("既然你这么喜欢这个菜单,就去GitHub给这个项目点个Star呗~\n点击“帮助”前往GitHub项目地址\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2,0,"https://github.com/WillamSun/NumberGame");
                     break;
                 case 11:
-                    dialogResult = MessageBox.Show("行行，我坦白，我确实sha人了\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("行行，我坦白，我确实sha人了\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2);
                     break;
                 case 12:
                 case 13:
                 case 14:
-                    dialogResult = MessageBox.Show("6\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("6\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 case 15:
                 case 16:
                 case 17:
-                    dialogResult = MessageBox.Show("大哥佩服\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("大哥佩服\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 case 18:
                 case 19:
-                    dialogResult = MessageBox.Show("爸爸\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show("爸爸\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
                 default:
                     if (openHelpMenu >= 20)
                     {
-                        dialogResult = MessageBox.Show("傻逼别看了\n\n" + HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+                        dialogResult = MessageBox.Show("傻逼别看了\n\n" + HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
                         break;
                     }
-                    dialogResult = MessageBox.Show(HelpText, "帮助", (Help >= 3) ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
+                    dialogResult = MessageBox.Show(HelpText, "帮助", boole ? MessageBoxButtons.OK : MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2);
                     break;
             }
             if (dialogResult == DialogResult.Yes)
@@ -387,9 +394,14 @@ namespace NumberGame
 
         private void button3_Click(object sender, EventArgs e)
         {
+            bool[] args = { checkBox1.Checked,checkBox2.Checked };
+            timer1.Stop();
+            timer2.Stop();
             Controls.Clear();
             InitializeComponent();
             Form1_Load(sender, e);
+            checkBox1.Checked = args[0];
+            checkBox2.Checked = args[1];
         }
 
         private int GetBiggestChoise(bool Biggest = true)
