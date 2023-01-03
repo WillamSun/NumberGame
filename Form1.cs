@@ -555,10 +555,11 @@ namespace NumberGame
             if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
             {
                 MessageBox.Show("请先以管理员启动程序","错误",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                答错自动蓝屏ToolStripMenuItem.Checked = false;
                 return;
             }
             checkBox5.Checked = false;
-            if (答错自动蓝屏ToolStripMenuItem.Checked && MessageBox.Show("注意:\n蓝屏并不会损坏电脑，只需重启即可。但即使是这样，也请慎重选择，因为这个操作可能会影响其他打开的软件的正常运行！所以为了减少损失，请在选择此选项前保存并关闭所有打开的软件\n别怪我没有警告你\n单击“是”以继续", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) { 答错自动蓝屏ToolStripMenuItem.Checked = false; }
+            if (答错自动蓝屏ToolStripMenuItem.Checked && MessageBox.Show("警告(我劝你还是看看): \n本软件里（我不能保证其他软件也这么善良）的蓝屏指的是会导致电脑报错并关机，但是并不会损坏电脑，只不过是多了一个错误提示，只需正常重启即可。但即使是这样，也请慎重选择，因为这个操作可能会影响其他打开的软件的正常运行！所以为了减少损失，请在选择此选项前保存并关闭所有打开的软件。除此之外，我也不建议你经常这样做，开关机很麻烦\n别怪我没有警告你\n单击“是”以继续，在你输之前，你可以随时关闭这个功能\n此操作有可能会被杀毒软件拦截", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) 答错自动蓝屏ToolStripMenuItem.Checked = false; 
             checkBox5.Checked = false;
         }
 
