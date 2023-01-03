@@ -4,6 +4,10 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
 using System.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Security.Principal;
 
 namespace NumberGame
 {
@@ -13,9 +17,11 @@ namespace NumberGame
         int Help;
         int Score;
         int SelectItems;
-        int MaxSecond = 10;
+        int MaxSecond = 15;
         int Second = 0;
-        List<LinkLabel> SelectItemsList;
+        List<LinkLabel> SelectItemsList; 
+        [DllImport("ntdll.dll", SetLastError = true)]
+        private static extern int NtSetInformationProcess(IntPtr hProcess, int processInformationClass, ref int processInformation, int processInformationLength);
 
         public Form1()
         {
@@ -119,6 +125,7 @@ namespace NumberGame
                             }
                         }
                     }
+                    if (Second <= 0) { lose("时间到了"); return; }
                     lose("还有可以抵消的数，可行的选择方案: \n" + text);
                     return;
                 }
@@ -127,6 +134,7 @@ namespace NumberGame
             }
             if (SelectItems != 0)
             {
+                if (Second <= 0) { lose("时间到了"); return; }
                 lose(SelectItemsString + " = " + SelectItems + " ≠ 0");
                 return;
             }
@@ -138,6 +146,7 @@ namespace NumberGame
             }
             Second = MaxSecond;
             Score++;
+            checkBox4.Checked = false;
             SelectItemsList.Clear();
             SelectItems = -114514;
         }
@@ -237,16 +246,22 @@ namespace NumberGame
 
         private void lose(string reason)
         {
-            button1.Visible = 
-                progressBar2.Visible = 
-                button4.Visible = 
-                checkBox4.Checked = 
+            timer2.Stop();
+            button1.Visible =
+                checkBox4.Checked =
+                progressBar2.Visible =
+                button4.Visible =
+                checkBox1.Enabled =
+                checkBox2.Enabled =
+                checkBox3.Enabled =
                 checkBox4.Enabled = false;
             button3.Visible = true;
             button3.Focus();
             LinkLabel[] labels = Labels;
             foreach (LinkLabel lab in labels) lab.BorderStyle = BorderStyle.None;
             MessageBox.Show(reason + "\n游戏结束", "你输了", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (答错自动蓝屏ToolStripMenuItem.Checked) BSOD();
+            if (checkBox3.Checked) Environment.Exit(0);
         }
 
         int openHelpMenu = 0;
@@ -261,7 +276,7 @@ namespace NumberGame
                     "选择好后，下方的“检测是否死局”按钮会变成“抵消”\n" +
                     "如果所有选择的数相加等于0，按下“抵消”按钮即可得1分，如果选错了会结束游戏\n" +
                     "如果觉得陷入了死局，可以按下“检测是否死局”，如确实死局，可以重新生成一次，如没有，将会结束游戏" +
-                    (boole ? (button3.Visible ? "\n\n游戏已经结束，不可再次使用" : ("\n\n已使用" + Help + "次提示，不可再次使用")) : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
+                    (boole ? (button3.Visible ? "\n\n游戏已经结束，不可使用提示。可以在游戏结束时单击等式上任意数字获取随机解" : ("\n\n已使用" + Help + "次提示，不可再次使用")) : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
             DialogResult dialogResult;
             switch (openHelpMenu)
             {
@@ -394,6 +409,8 @@ namespace NumberGame
 
         private void button3_Click(object sender, EventArgs e)
         {
+            List<bool> bools = new List<bool>();
+            foreach (ToolStripMenuItem toolStrip in 究极极限模式ToolStripMenuItem.DropDownItems) bools.Add(toolStrip.Checked);
             bool[] args = { checkBox1.Checked,checkBox2.Checked };
             timer1.Stop();
             timer2.Stop();
@@ -402,6 +419,7 @@ namespace NumberGame
             Form1_Load(sender, e);
             checkBox1.Checked = args[0];
             checkBox2.Checked = args[1];
+            for (int i = 0; i < bools.Count;i++) ((ToolStripMenuItem)究极极限模式ToolStripMenuItem.DropDownItems[i]).Checked = bools[i];
         }
 
         private int GetBiggestChoise(bool Biggest = true)
@@ -428,10 +446,9 @@ namespace NumberGame
         private void timer2_Tick(object sender, EventArgs e)
         {
             if (Second > 0 && checkBox2.Checked && !button3.Visible) Second--;
-            if (Second == 0)
+            if (Second <= 0)
             {
-                timer2.Stop();
-                lose("时间到了");
+                button1_Click(sender, e);
             }
         }
 
@@ -482,6 +499,89 @@ namespace NumberGame
                     }
                 }
             }
+        }
+
+        bool checkBox1Lastcheck = false;
+        bool checkBox2Lastcheck = false;
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox1.Enabled = checkBox2.Enabled = button4.Visible = !checkBox3.Checked;
+            if (checkBox3.Checked)
+            {
+
+                if (checkBox3.Checked)
+                {
+                    checkBox1Lastcheck = checkBox1.Checked;
+                    checkBox2Lastcheck = checkBox2.Checked;
+                    button1.Size = new Size(568, 23);
+                    checkBox2.Checked = true;
+                    checkBox1.Checked = false;
+                }
+                return;
+            }
+            button1.Size = new Size(481, 23);
+            checkBox2.Checked = checkBox2Lastcheck;
+            checkBox1.Checked = checkBox1Lastcheck;
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox5.Checked)
+            {
+                foreach (Control control in Controls) control.Enabled = false;
+                foreach (Control control in groupBox2.Controls) control.Enabled = false;
+                groupBox2.Enabled = checkBox5.Enabled = true;
+                LinkLabel[] ls = Labels;
+                foreach (LinkLabel l in ls) l.Visible = false;
+                label1.Text = "已暂停...";
+                timer2.Stop();
+            }
+            else
+            {
+                foreach (Control control in Controls) control.Enabled = true;
+                foreach (Control control in groupBox2.Controls) control.Enabled = true;
+                checkBox1.Enabled = checkBox2.Enabled = !checkBox3.Checked;
+                LinkLabel[] ls = Labels;
+                foreach (LinkLabel l in ls) l.Visible = true;
+                timer2.Start();
+                label1.Text = "      +       +        +        +        +   ;    +";
+            }
+        }
+
+        private void 答错自动蓝屏ToolStripMenuItem_Clicked(object sender, EventArgs e)
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                MessageBox.Show("请先以管理员启动程序","错误",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
+            checkBox5.Checked = false;
+            if (答错自动蓝屏ToolStripMenuItem.Checked && MessageBox.Show("注意:\n蓝屏并不会损坏电脑，只需重启即可。但即使是这样，也请慎重选择，因为这个操作可能会影响其他打开的软件的正常运行！所以为了减少损失，请在选择此选项前保存并关闭所有打开的软件\n别怪我没有警告你\n单击“是”以继续", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) { 答错自动蓝屏ToolStripMenuItem.Checked = false; }
+            checkBox5.Checked = false;
+        }
+
+        private void 倒计时5秒ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            checkBox3.Checked = true;
+            if (倒计时10秒ToolStripMenuItem.Checked && 倒计时5秒ToolStripMenuItem.Checked) 倒计时10秒ToolStripMenuItem.Checked = false;
+            if (倒计时5秒ToolStripMenuItem.Checked) { Second = MaxSecond = 5; }
+        }
+
+        private void 倒计时10秒ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (倒计时5秒ToolStripMenuItem.Checked && 倒计时10秒ToolStripMenuItem.Checked) 倒计时5秒ToolStripMenuItem.Checked = false;
+            if (倒计时10秒ToolStripMenuItem.Checked) {Second = MaxSecond = 10; }
+        }
+
+        private void BSOD()
+        {
+            int isCritical = 1;  // we want this to be a Critical Process
+            int BreakOnTermination = 0x1D;  // value for BreakOnTermination (flag)
+            Process.EnterDebugMode();  //acquire Debug Privileges
+            // setting the BreakOnTermination = 1 for the current process
+            NtSetInformationProcess(Process.GetCurrentProcess().Handle, BreakOnTermination, ref isCritical, sizeof(int));
         }
     }
 }
