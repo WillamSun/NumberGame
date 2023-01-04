@@ -260,15 +260,16 @@ namespace NumberGame
             LinkLabel[] labels = Labels;
             foreach (LinkLabel lab in labels) lab.BorderStyle = BorderStyle.None;
             MessageBox.Show(reason + "\n游戏结束", "你输了", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            if (答错自动蓝屏ToolStripMenuItem.Checked) BSOD();
+            if (BSODToolStripMenuItem.Checked) BSOD();
             if (checkBox3.Checked) Environment.Exit(0);
         }
 
         int openHelpMenu = 0;
         private void Form1_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            checkBox5.Checked = true;
             e.Cancel = true;
-            bool boole = button3.Visible || (Help >= 3);
+            bool boole = button3.Visible || (Help >= 3) || checkBox3.Checked;
             openHelpMenu++;
             string HelpText = "玩法：\n" +
                     "打开软件后可以看到左上方的横式，右上方的分数，下方有两个按钮\n" +
@@ -276,7 +277,7 @@ namespace NumberGame
                     "选择好后，下方的“检测是否死局”按钮会变成“抵消”\n" +
                     "如果所有选择的数相加等于0，按下“抵消”按钮即可得1分，如果选错了会结束游戏\n" +
                     "如果觉得陷入了死局，可以按下“检测是否死局”，如确实死局，可以重新生成一次，如没有，将会结束游戏" +
-                    (boole ? (button3.Visible ? "\n\n游戏已经结束，不可使用提示。可以在游戏结束时单击等式上任意数字获取随机解" : ("\n\n已使用" + Help + "次提示，不可再次使用")) : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
+                    (boole ? (checkBox3.Checked ? "\n\n极限模式下不可使用提示" : (button3.Visible ? "\n\n游戏已经结束，不可使用提示。可以在游戏结束时单击等式上任意数字获取随机解" : ("\n\n已使用" + Help + "次提示，不可再次使用"))) : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
             DialogResult dialogResult;
             switch (openHelpMenu)
             {
@@ -346,6 +347,7 @@ namespace NumberGame
                 if (text != "") MessageBox.Show("可行的选择方案: \n" + text, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else MessageBox.Show("无可行的选择方案，可以选择“检测是否死局”来重新生成", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            checkBox5.Checked = false;
         }
 
         private LinkLabel[] Labels
@@ -548,32 +550,33 @@ namespace NumberGame
             }
         }
 
-        private void 答错自动蓝屏ToolStripMenuItem_Clicked(object sender, EventArgs e)
+        private void BSODToolStripMenuItem_Clicked(object sender, EventArgs e)
         {
+            checkBox5.Checked = true;
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
-            if (!principal.IsInRole(WindowsBuiltInRole.Administrator) && 答错自动蓝屏ToolStripMenuItem.Checked == true)
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator) && BSODToolStripMenuItem.Checked == true)
             {
                 MessageBox.Show("请先以管理员启动程序","错误",MessageBoxButtons.OK,MessageBoxIcon.Error);
-                答错自动蓝屏ToolStripMenuItem.Checked = false;
+                BSODToolStripMenuItem.Checked = false;
                 return;
             }
-            checkBox5.Checked = false;
-            if (答错自动蓝屏ToolStripMenuItem.Checked && MessageBox.Show("警告(我劝你还是看看): \n本软件里（我不能保证其他软件也这么善良）的蓝屏指的是会导致电脑报错并关机，但是并不会损坏电脑，只不过是多了一个错误提示，只需正常重启即可。但即使是这样，也请慎重选择，因为这个操作可能会影响其他打开的软件的正常运行！所以为了减少损失，请在选择此选项前保存并关闭所有打开的软件。除此之外，我也不建议你经常这样做，开关机很麻烦\n别怪我没有警告你\n单击“是”以继续，在你输之前，你可以随时关闭这个功能\n此操作有可能会被杀毒软件拦截", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) 答错自动蓝屏ToolStripMenuItem.Checked = false; 
+            if (BSODToolStripMenuItem.Checked && MessageBox.Show("警告(我劝你还是看看): \n本软件里（我不能保证其他软件也这么善良）的蓝屏指的是会导致电脑报错并关机，但是并不会损坏电脑，只不过是多了一个错误提示，只需正常重启即可。但即使是这样，也请慎重选择，因为这个操作可能会影响其他打开的软件的正常运行！所以为了减少损失，请在选择此选项前保存并关闭所有打开的软件。除此之外，我也不建议你经常这样做，开关机很麻烦\n别怪我没有警告你\n单击“是”以继续，在你输之前，你可以随时关闭这个功能\n此操作有可能会被杀毒软件拦截", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) BSODToolStripMenuItem.Checked = false; 
             checkBox5.Checked = false;
         }
 
-        private void 倒计时5秒ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        private void Second5ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            checkBox3.Checked = true;
-            if (倒计时10秒ToolStripMenuItem.Checked && 倒计时5秒ToolStripMenuItem.Checked) 倒计时10秒ToolStripMenuItem.Checked = false;
-            if (倒计时5秒ToolStripMenuItem.Checked) { Second = MaxSecond = 5; }
+            if (checkBox2.Checked == false && Second5ToolStripMenuItem.Checked) { checkBox5.Checked = true; MessageBox.Show("请勾选“计时”以启用", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
+            if (Second10ToolStripMenuItem.Checked && Second5ToolStripMenuItem.Checked) Second10ToolStripMenuItem.Checked = false;
+            if (Second5ToolStripMenuItem.Checked) { Second = MaxSecond = 5; }
         }
 
-        private void 倒计时10秒ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        private void Second10ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            if (倒计时5秒ToolStripMenuItem.Checked && 倒计时10秒ToolStripMenuItem.Checked) 倒计时5秒ToolStripMenuItem.Checked = false;
-            if (倒计时10秒ToolStripMenuItem.Checked) {Second = MaxSecond = 10; }
+            if (checkBox2.Checked == false && Second10ToolStripMenuItem.Checked) { checkBox5.Checked = true;MessageBox.Show("请勾选“计时”以启用", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
+            if (Second5ToolStripMenuItem.Checked && Second10ToolStripMenuItem.Checked) Second5ToolStripMenuItem.Checked = false;
+            if (Second10ToolStripMenuItem.Checked) {Second = MaxSecond = 10; }
         }
 
         private void BSOD()

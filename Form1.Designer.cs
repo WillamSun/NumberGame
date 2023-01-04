@@ -53,9 +53,9 @@
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.究极极限模式ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.答错自动蓝屏ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.倒计时10秒ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.倒计时5秒ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.BSODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Second10ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Second5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label9 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
@@ -348,36 +348,36 @@
             // 究极极限模式ToolStripMenuItem
             // 
             this.究极极限模式ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.答错自动蓝屏ToolStripMenuItem,
-            this.倒计时10秒ToolStripMenuItem,
-            this.倒计时5秒ToolStripMenuItem});
+            this.BSODToolStripMenuItem,
+            this.Second10ToolStripMenuItem,
+            this.Second5ToolStripMenuItem});
             this.究极极限模式ToolStripMenuItem.Name = "究极极限模式ToolStripMenuItem";
             this.究极极限模式ToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.究极极限模式ToolStripMenuItem.Text = "究极极限模式";
             // 
-            // 答错自动蓝屏ToolStripMenuItem
+            // BSODToolStripMenuItem
             // 
-            this.答错自动蓝屏ToolStripMenuItem.CheckOnClick = true;
-            this.答错自动蓝屏ToolStripMenuItem.Name = "答错自动蓝屏ToolStripMenuItem";
-            this.答错自动蓝屏ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.答错自动蓝屏ToolStripMenuItem.Text = "答错自动蓝屏";
-            this.答错自动蓝屏ToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.答错自动蓝屏ToolStripMenuItem_Clicked);
+            this.BSODToolStripMenuItem.CheckOnClick = true;
+            this.BSODToolStripMenuItem.Name = "BSODToolStripMenuItem";
+            this.BSODToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.BSODToolStripMenuItem.Text = "答错自动蓝屏";
+            this.BSODToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.BSODToolStripMenuItem_Clicked);
             // 
-            // 倒计时10秒ToolStripMenuItem
+            // Second10ToolStripMenuItem
             // 
-            this.倒计时10秒ToolStripMenuItem.CheckOnClick = true;
-            this.倒计时10秒ToolStripMenuItem.Name = "倒计时10秒ToolStripMenuItem";
-            this.倒计时10秒ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.倒计时10秒ToolStripMenuItem.Text = "倒计时10秒";
-            this.倒计时10秒ToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.倒计时10秒ToolStripMenuItem_CheckStateChanged);
+            this.Second10ToolStripMenuItem.CheckOnClick = true;
+            this.Second10ToolStripMenuItem.Name = "Second10ToolStripMenuItem";
+            this.Second10ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.Second10ToolStripMenuItem.Text = "倒计时10秒";
+            this.Second10ToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.Second10ToolStripMenuItem_CheckStateChanged);
             // 
-            // 倒计时5秒ToolStripMenuItem
+            // Second5ToolStripMenuItem
             // 
-            this.倒计时5秒ToolStripMenuItem.CheckOnClick = true;
-            this.倒计时5秒ToolStripMenuItem.Name = "倒计时5秒ToolStripMenuItem";
-            this.倒计时5秒ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.倒计时5秒ToolStripMenuItem.Text = "倒计时5秒";
-            this.倒计时5秒ToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.倒计时5秒ToolStripMenuItem_CheckStateChanged);
+            this.Second5ToolStripMenuItem.CheckOnClick = true;
+            this.Second5ToolStripMenuItem.Name = "Second5ToolStripMenuItem";
+            this.Second5ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.Second5ToolStripMenuItem.Text = "倒计时5秒";
+            this.Second5ToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.Second5ToolStripMenuItem_CheckStateChanged);
             // 
             // checkBox2
             // 
@@ -488,9 +488,9 @@
         private System.Windows.Forms.CheckBox checkBox5;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 究极极限模式ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 答错自动蓝屏ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 倒计时10秒ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 倒计时5秒ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem BSODToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem Second10ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem Second5ToolStripMenuItem;
     }
 }
 
