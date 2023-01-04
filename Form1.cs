@@ -267,9 +267,9 @@ namespace NumberGame
         int openHelpMenu = 0;
         private void Form1_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            checkBox5.Checked = true;
             e.Cancel = true;
-            bool boole = button3.Visible || (Help >= 3) || checkBox3.Checked;
+            bool bool1 = checkBox5.Checked;
+            bool boole = button3.Visible || (Help >= 3) || checkBox3.Checked || bool1;
             openHelpMenu++;
             string HelpText = "玩法：\n" +
                     "打开软件后可以看到左上方的横式，右上方的分数，下方有两个按钮\n" +
@@ -277,7 +277,7 @@ namespace NumberGame
                     "选择好后，下方的“检测是否死局”按钮会变成“抵消”\n" +
                     "如果所有选择的数相加等于0，按下“抵消”按钮即可得1分，如果选错了会结束游戏\n" +
                     "如果觉得陷入了死局，可以按下“检测是否死局”，如确实死局，可以重新生成一次，如没有，将会结束游戏" +
-                    (boole ? (checkBox3.Checked ? "\n\n极限模式下不可使用提示" : (button3.Visible ? "\n\n游戏已经结束，不可使用提示。可以在游戏结束时单击等式上任意数字获取随机解" : ("\n\n已使用" + Help + "次提示，不可再次使用"))) : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
+                    (boole ? (!bool1 ? (checkBox3.Checked ? "\n\n极限模式下不可使用提示" : (button3.Visible ? "\n\n游戏已经结束，不可使用提示。可以在游戏结束时单击等式上任意数字获取随机解" : ("\n\n已使用" + Help + "次提示，不可再次使用"))) : "\n\n游戏暂停状态下不可使用提示，想使用提示请先解除暂停状态") : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
             DialogResult dialogResult;
             switch (openHelpMenu)
             {
@@ -347,7 +347,6 @@ namespace NumberGame
                 if (text != "") MessageBox.Show("可行的选择方案: \n" + text, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else MessageBox.Show("无可行的选择方案，可以选择“检测是否死局”来重新生成", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            checkBox5.Checked = false;
         }
 
         private LinkLabel[] Labels
@@ -441,8 +440,11 @@ namespace NumberGame
 
         private void button4_Click(object sender, EventArgs e)
         {
+            bool bool1 = checkBox5.Checked;
+            checkBox5.Checked = true;
             if (MessageBox.Show("是否开启新局，本局将会立刻结束","提示",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation,MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 button3_Click(sender, e);
+            checkBox5.Checked = false || bool1;
         }
 
         private void timer2_Tick(object sender, EventArgs e)
