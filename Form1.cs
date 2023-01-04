@@ -567,14 +567,14 @@ namespace NumberGame
 
         private void Second5ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == false && Second5ToolStripMenuItem.Checked) { checkBox5.Checked = true; MessageBox.Show("请勾选“计时”以启用", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
+            if (checkBox2.Checked == false && Second5ToolStripMenuItem.Checked) { checkBox5.Checked = true; MessageBox.Show("请勾选“计时”以生效", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
             if (Second10ToolStripMenuItem.Checked && Second5ToolStripMenuItem.Checked) Second10ToolStripMenuItem.Checked = false;
             if (Second5ToolStripMenuItem.Checked) { Second = MaxSecond = 5; }
         }
 
         private void Second10ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == false && Second10ToolStripMenuItem.Checked) { checkBox5.Checked = true;MessageBox.Show("请勾选“计时”以启用", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
+            if (checkBox2.Checked == false && Second10ToolStripMenuItem.Checked) { checkBox5.Checked = true;MessageBox.Show("请勾选“计时”以生效", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
             if (Second5ToolStripMenuItem.Checked && Second10ToolStripMenuItem.Checked) Second5ToolStripMenuItem.Checked = false;
             if (Second10ToolStripMenuItem.Checked) {Second = MaxSecond = 10; }
         }
