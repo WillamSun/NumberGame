@@ -552,7 +552,7 @@ namespace NumberGame
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
-            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator) && 答错自动蓝屏ToolStripMenuItem.Checked == true)
             {
                 MessageBox.Show("请先以管理员启动程序","错误",MessageBoxButtons.OK,MessageBoxIcon.Error);
                 答错自动蓝屏ToolStripMenuItem.Checked = false;
