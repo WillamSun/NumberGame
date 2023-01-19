@@ -4,10 +4,10 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
 using System.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Security.Principal;
+using System.Runtime.CompilerServices;
 
 namespace NumberGame
 {
@@ -17,6 +17,7 @@ namespace NumberGame
         int Help;
         int Score;
         int SelectItems;
+        bool Reseting = false;
         int MaxSecond = 15;
         int Second = 0;
         List<LinkLabel> SelectItemsList; 
@@ -47,7 +48,12 @@ namespace NumberGame
         private void label2_Click(object sender, EventArgs e)
         {
             if (!(sender is LinkLabel)) return;
-            checkBox4.CheckState = CheckState.Indeterminate;
+            Selectlabel(sender as LinkLabel);
+        }
+
+        private void Selectlabel(LinkLabel label, bool flagforcheckBox4 = false)
+        {
+            if (!flagforcheckBox4) checkBox4.CheckState = CheckState.Indeterminate;
             if (button3.Visible)
             {
                 LinkLabel[] labels = Labels;
@@ -60,21 +66,20 @@ namespace NumberGame
                 }
                 return;
             }
-            LinkLabel label = sender as LinkLabel;
             SelectItemsString = "";
             if (label.BorderStyle != BorderStyle.FixedSingle)
             {
-                if (SelectItems == -114514)
-                {
-                    SelectItems = 0;
-                }
+                /*if (SelectItems == Max) checkBox4.Checked = true;
+                else if (SelectItems == -114514) checkBox4.Checked = false;
+                else checkBox4.CheckState = CheckState.Indeterminate;*/
+                if (SelectItems == -114514) SelectItems = 0;
                 if (checkBox1.Checked)
                 {
                     progressBar1.Visible = true;
                     label11.Visible = true;
                     label10.Visible = true;
                 }
-                SelectItems += int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
+                SelectItems += ParesString(label.Text);
                 SelectItemsList.Add(label);
                 label.BorderStyle = BorderStyle.FixedSingle;
                 foreach (LinkLabel l in SelectItemsList)
@@ -82,9 +87,10 @@ namespace NumberGame
                     if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
                     else SelectItemsString += l.Text + " + ";
                 }
+                if (SelectItemsList.Count == 7 && !flagforcheckBox4) checkBox4.CheckState = CheckState.Checked;
                 return;
             }
-            SelectItems -= int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
+            SelectItems -= ParesString(label.Text);
             SelectItemsList.Remove(label);
             label.BorderStyle = BorderStyle.None;
             foreach (LinkLabel l in SelectItemsList)
@@ -92,7 +98,7 @@ namespace NumberGame
                 if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
                 else SelectItemsString += l.Text + " + ";
             }
-            if (SelectItemsList.Count == 0) checkBox4.Checked = false;
+            if (SelectItemsList.Count == 0 && !flagforcheckBox4) checkBox4.Checked = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -132,20 +138,21 @@ namespace NumberGame
                 InitializeLabels();
                 return;
             }
-            if (SelectItems != 0)
+            if ((SelectItems != 0) && !(((SelectItems > 63) && (SelectItems < 700)) || ((SelectItems > 700) && (SelectItems < 7000))))
             {
                 if (Second <= 0) { lose("时间到了"); return; }
                 lose(SelectItemsString + " = " + SelectItems + " ≠ 0");
                 return;
             }
-            foreach (LinkLabel label in SelectItemsList)
-            {
-                label.Text = RandomLabelText();
-                label.BorderStyle = BorderStyle.None;
-                Thread.Sleep(10);
-            }
+            if (!((SelectItems > 63) && (SelectItems < 700))) foreach (LinkLabel label in SelectItemsList)
+                {
+                    label.Text = RandomLabelText(ToolsToolStripMenuItem.Checked);
+                    label.BorderStyle = BorderStyle.None;
+                    Thread.Sleep(10);
+                }
+            if (!((SelectItems > 700) && (SelectItems < 7000))) Score++;
+            if ((SelectItems > 63) && (SelectItems < 700)) { lose("系统错误，无法识别NaN，为了保护程序自动结束本轮游戏"); return; }
             Second = MaxSecond;
-            Score++;
             checkBox4.Checked = false;
             SelectItemsList.Clear();
             SelectItems = -114514;
@@ -154,7 +161,7 @@ namespace NumberGame
         private void timer1_Tick(object sender, EventArgs e)
         {
             double tmp;
-            progressBar2.Value = (100/MaxSecond) * Second;
+            progressBar2.Value = 100 / MaxSecond * Second;
             progressBar2.Visible = checkBox2.Checked && !button3.Visible;
             if (checkBox1.Checked)
             {
@@ -162,13 +169,28 @@ namespace NumberGame
                 label10.Text = "得数: " + SelectItems;
                 if (SelectItems == 0) label11.ForeColor = label10.ForeColor = Color.Green;
                 else label11.ForeColor = label10.ForeColor = Color.Black;
-                if (SelectItems != -114514)
+                if (SelectItems != -114514 && SelectItems <= 63)
                 {
                     progressBar1.Visible = true;
                     label11.Visible = true;
                     tmp = (Math.Abs(GetBiggestChoise()) > Math.Abs(GetBiggestChoise(false))) ? Math.Abs(GetBiggestChoise()) : Math.Abs(GetBiggestChoise(false));
                     tmp = 100 / Math.Abs(tmp) * Math.Abs(0 - SelectItems);
                     progressBar1.Value = (int)tmp;
+                }
+                else if (SelectItems > 63)
+                {
+                    if ((SelectItems > 700) && (SelectItems < 7000))
+                    {
+                        label10.Text = "得数: 0";
+                        label11.ForeColor = label10.ForeColor = Color.Green;
+                    }
+                    else if ((SelectItems > 63) && (SelectItems < 700))
+                    {
+                        progressBar1.Visible = false;
+                        label11.Visible = false;
+                        label10.Text = "得数: NaN";
+                        label11.ForeColor = label10.ForeColor = Color.Red;
+                    }
                 }
             }
             else
@@ -188,21 +210,25 @@ namespace NumberGame
             Environment.Exit(0);
         }
 
-        private string RandomLabelText()
+        private string RandomLabelText(bool Special = false)
         {
-            int integer = new Random().Next(-9, 9);
-            if (integer < 0)
+            int integer = new Random().Next(-9, 10 + (Special ? 3 : 0));
+            switch (integer)
             {
-                return "(" + integer + ")";
+                case 1: case 2: case 3: case 4: case 5: case 6:case 7: case 8: case 9:
+                    return "(+" + integer + ")";
+                case 0:
+                    return "(0)";
+                case -1: case -2: case -3: case -4: case -5: case -6: case -7: case -8: case -9:
+                    return "(" + integer + ")";
+                case 10:
+                    return "(∞)";
+                case 11:
+                    return "NaN";
+                case 12:
+                    return "(±" + new Random().Next(-10, 10) + ")";
             }
-            else if (integer == 0)
-            {
-                return "(0)";
-            }
-            else
-            {
-                return "(+" + integer + ")";
-            }
+            return "";
         }
 
         private void InitializeLabels()
@@ -210,7 +236,7 @@ namespace NumberGame
             foreach (LinkLabel label in Labels)
             {
                 label.BorderStyle = BorderStyle.None;
-                label.Text = RandomLabelText();
+                label.Text = RandomLabelText(ToolsToolStripMenuItem.Checked);
                 Thread.Sleep(10);
             }
         }
@@ -218,18 +244,32 @@ namespace NumberGame
         private List<List<LinkLabel>> GetOKOffsetLabels()
         {
             List<List<LinkLabel>> result = new List<List<LinkLabel>>();
-            LinkLabel[] labels = Labels;
-            for (int i = 1; i < labels.Length; i++) //选择数
+            List<LinkLabel> labels = Labels.ToList();
+            List<LinkLabel> labelsOld = Labels.ToList();
+            foreach (LinkLabel linklabel in labelsOld) 
+                if (linklabel.Text == "(∞)" || linklabel.Text == "NaN" || linklabel.Text.Contains("±")) 
+                {
+                    /*if (linklabel.Text.Contains("±"))
+                    {
+                        LinkLabel llll = new LinkLabel(),lllll = new LinkLabel();
+                        lllll.Text = " " + linklabel.Text.Replace("(-", string.Empty).Replace(")", string.Empty).Replace("±", string.Empty) + " ";
+                        llll.Text = "(" + linklabel.Text.Replace("(+", string.Empty).Replace(")", string.Empty).Replace("±", string.Empty) + ")";
+                        labels.Add(llll);
+                        labels.Add(lllll);
+                    }*/
+                    labels.Remove(linklabel);
+                }
+            for (int i = 1; i < labels.Count; i++) //选择数
             {
                 List<List<int>> list = new List<List<int>>();
-                list.AddRange(PermutationCombinations(Enumerable.Range(0,labels.Length).ToList(),i));
+                list.AddRange(PermutationCombinations(Enumerable.Range(0,labels.Count).ToList(),i));
                 foreach (List<int> ls in list)
                 {
                     List<LinkLabel> tmp = new List<LinkLabel>();
                     int integer = 0;
                     foreach (int inte in ls)
                     {
-                        integer += int.Parse(labels[inte].Text.Replace("(", string.Empty).Replace(")", string.Empty));
+                        integer += ParesString(labels[inte].Text);
                     }
                     if (integer == 0)
                     {
@@ -277,7 +317,8 @@ namespace NumberGame
                     "选择好后，下方的“检测是否死局”按钮会变成“抵消”\n" +
                     "如果所有选择的数相加等于0，按下“抵消”按钮即可得1分，如果选错了会结束游戏\n" +
                     "如果觉得陷入了死局，可以按下“检测是否死局”，如确实死局，可以重新生成一次，如没有，将会结束游戏" +
-                    (boole ? (!bool1 ? (checkBox3.Checked ? "\n\n极限模式下不可使用提示" : (button3.Visible ? "\n\n游戏已经结束，不可使用提示。可以在游戏结束时单击等式上任意数字获取随机解" : ("\n\n已使用" + Help + "次提示，不可再次使用"))) : "\n\n游戏暂停状态下不可使用提示，想使用提示请先解除暂停状态") : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会"));
+                    (boole ? (bool1 ? "\n\n游戏暂停状态下不可使用提示，想使用提示请先解除暂停状态" : (checkBox3.Checked ? "\n\n极限模式下不可使用提示" : (button3.Visible ? "\n\n游戏已经结束，不可使用提示。可以在游戏结束时单击等式上任意数字获取随机解" : ("\n\n已使用" + Help + "次提示，不可再次使用")))) : ("\n\n陷入迷茫？点击“是”获取提示\n" + "已使用" + Help + "次提示，为了游戏体验，只可使用3次提示，你还剩" + (3 - Help) + "次机会")) +
+                    (ToolsToolStripMenuItem.Checked ? "\n\n道具模式出现的道具: \n1. ∞\n无限符号可以消除同时和它选择的数，但它并不会提供分数，你可以用它消除你消除不了的数\n2. NaN\n选择此数将会立刻加一分，但是会使游戏报错并结束游戏\n3. (±n)\nn可以被当作正数，也可以被当作负数" : string.Empty);
             DialogResult dialogResult;
             switch (openHelpMenu)
             {
@@ -410,6 +451,7 @@ namespace NumberGame
 
         private void button3_Click(object sender, EventArgs e)
         {
+            Reseting = true;
             List<bool> bools = new List<bool>();
             foreach (ToolStripMenuItem toolStrip in 究极极限模式ToolStripMenuItem.DropDownItems) bools.Add(toolStrip.Checked);
             bool[] args = { checkBox1.Checked,checkBox2.Checked };
@@ -417,16 +459,17 @@ namespace NumberGame
             timer2.Stop();
             Controls.Clear();
             InitializeComponent();
-            Form1_Load(sender, e);
             checkBox1.Checked = args[0];
             checkBox2.Checked = args[1];
             for (int i = 0; i < bools.Count;i++) ((ToolStripMenuItem)究极极限模式ToolStripMenuItem.DropDownItems[i]).Checked = bools[i];
+            Form1_Load(sender, e);
+            Reseting = false;
         }
 
         private int GetBiggestChoise(bool Biggest = true)
         {
             int BiggestInt = 0;
-            LinkLabel[] labels = Labels;
+            List<LinkLabel> labels = Labels.ToList();
             foreach (Label label in labels)
             {
                 int i = int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
@@ -459,48 +502,28 @@ namespace NumberGame
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox4.CheckState == CheckState.Indeterminate) return;
-            LinkLabel[] labels = Labels;
-            SelectItemsString = "";
-            if (checkBox4.Checked)
+            LinkLabel[] ls = Labels;
+            foreach (LinkLabel label in ls)
+                if (checkBox4.Checked == (label.BorderStyle != BorderStyle.FixedSingle)) Selectlabel(label, true);
+        }
+
+        private int ParesString(string inp)
+        {
+            try
             {
-                foreach (LinkLabel label in labels)
-                {
-                    if (label.BorderStyle != BorderStyle.FixedSingle)
-                    {
-                        if (SelectItems == -114514)
-                        {
-                            SelectItems = 0;
-                        }
-                        if (checkBox1.Checked)
-                        {
-                            progressBar1.Visible = true;
-                            label11.Visible = true;
-                            label10.Visible = true;
-                        }
-                        SelectItems += int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
-                        SelectItemsList.Add(label);
-                        label.BorderStyle = BorderStyle.FixedSingle;
-                        foreach (LinkLabel l in SelectItemsList)
-                        {
-                            if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
-                            else SelectItemsString += l.Text + " + ";
-                        }
-                    }
-                }
-                return;
+                return int.Parse(inp.Replace("(", string.Empty).Replace(")", string.Empty));
             }
-            foreach (LinkLabel label in labels)
+            catch (FormatException ex)
             {
-                if (label.BorderStyle != BorderStyle.None)
+                switch (inp)
                 {
-                    SelectItems -= int.Parse(label.Text.Replace("(", string.Empty).Replace(")", string.Empty));
-                    SelectItemsList.Remove(label);
-                    label.BorderStyle = BorderStyle.None;
-                    foreach (LinkLabel l in SelectItemsList)
-                    {
-                        if (SelectItemsList.Last() == l) SelectItemsString += l.Text;
-                        else SelectItemsString += l.Text + " + ";
-                    }
+                    case "(∞)":
+                        return 1000;
+                    case "NaN":
+                        return 100;
+                    default:
+                        if (inp.Contains("±")) {return int.Parse(inp.Replace("(", string.Empty).Replace(")", string.Empty).Replace("±", string.Empty))*10000; }
+                        throw ex;
                 }
             }
         }
@@ -569,14 +592,24 @@ namespace NumberGame
 
         private void Second5ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == false && Second5ToolStripMenuItem.Checked) { checkBox5.Checked = true; MessageBox.Show("请勾选“计时”以生效", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
+            if (!Second10ToolStripMenuItem.Checked && !Second5ToolStripMenuItem.Checked)
+            {
+                MaxSecond = 15;
+                return;
+            }
+            if (checkBox2.Checked == false && Second5ToolStripMenuItem.Checked) { MessageBox.Show("请勾选“计时”以生效", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); }
             if (Second10ToolStripMenuItem.Checked && Second5ToolStripMenuItem.Checked) Second10ToolStripMenuItem.Checked = false;
             if (Second5ToolStripMenuItem.Checked) { Second = MaxSecond = 5; }
         }
 
         private void Second10ToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == false && Second10ToolStripMenuItem.Checked) { checkBox5.Checked = true;MessageBox.Show("请勾选“计时”以生效", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); checkBox5.Checked = false; }
+            if (!Second10ToolStripMenuItem.Checked && !Second5ToolStripMenuItem.Checked)
+            {
+                MaxSecond = 15;
+                return;
+            }
+            if (checkBox2.Checked == false && Second10ToolStripMenuItem.Checked) { MessageBox.Show("请勾选“计时”以生效", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information); }
             if (Second5ToolStripMenuItem.Checked && Second10ToolStripMenuItem.Checked) Second5ToolStripMenuItem.Checked = false;
             if (Second10ToolStripMenuItem.Checked) {Second = MaxSecond = 10; }
         }
@@ -588,6 +621,20 @@ namespace NumberGame
             Process.EnterDebugMode();  //acquire Debug Privileges
             // setting the BreakOnTermination = 1 for the current process
             NtSetInformationProcess(Process.GetCurrentProcess().Handle, BreakOnTermination, ref isCritical, sizeof(int));
+        }
+
+        private void ToolsToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Reseting) Reseting = false;
+            else
+            {
+                if (MessageBox.Show("应用修改需要重新开始一局，是否继续", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes) button3_Click(sender, e); 
+                else
+                {
+                    Reseting = true;
+                    ToolsToolStripMenuItem.Checked ^= true;
+                }
+            }
         }
     }
 }

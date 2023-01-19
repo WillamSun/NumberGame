@@ -56,6 +56,7 @@
             this.BSODToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Second10ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Second5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label9 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
@@ -213,7 +214,7 @@
             this.label6.Font = new System.Drawing.Font("宋体", 19F);
             this.label6.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.label6.LinkColor = System.Drawing.Color.Black;
-            this.label6.Location = new System.Drawing.Point(471, 30);
+            this.label6.Location = new System.Drawing.Point(471, 29);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(63, 33);
             this.label6.TabIndex = 4;
@@ -282,7 +283,7 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 10;
+            this.timer1.Interval = 15;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // button2
@@ -350,10 +351,11 @@
             this.究极极限模式ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.BSODToolStripMenuItem,
             this.Second10ToolStripMenuItem,
-            this.Second5ToolStripMenuItem});
+            this.Second5ToolStripMenuItem,
+            this.ToolsToolStripMenuItem});
             this.究极极限模式ToolStripMenuItem.Name = "究极极限模式ToolStripMenuItem";
             this.究极极限模式ToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.究极极限模式ToolStripMenuItem.Text = "究极极限模式";
+            this.究极极限模式ToolStripMenuItem.Text = "特殊选项";
             // 
             // BSODToolStripMenuItem
             // 
@@ -378,6 +380,14 @@
             this.Second5ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.Second5ToolStripMenuItem.Text = "倒计时5秒";
             this.Second5ToolStripMenuItem.CheckStateChanged += new System.EventHandler(this.Second5ToolStripMenuItem_CheckStateChanged);
+            // 
+            // ToolsToolStripMenuItem
+            // 
+            this.ToolsToolStripMenuItem.CheckOnClick = true;
+            this.ToolsToolStripMenuItem.Name = "ToolsToolStripMenuItem";
+            this.ToolsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.ToolsToolStripMenuItem.Text = "道具赛";
+            this.ToolsToolStripMenuItem.CheckedChanged += new System.EventHandler(this.ToolsToolStripMenuItem_CheckedChanged);
             // 
             // checkBox2
             // 
@@ -491,6 +501,7 @@
         private System.Windows.Forms.ToolStripMenuItem BSODToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem Second10ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem Second5ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsToolStripMenuItem;
     }
 }
 
